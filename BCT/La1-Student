@@ -13,11 +13,22 @@ contract StudentData {
     Student[] public students;
 
     // Mapping to track student IDs to ensure uniqueness
-    mapping(uint => bool) public studentExists;
+      mapping(uint => bool) public studentExists;
 
-    // Fallback function to handle any ETH sent to the contract
-    fallback() external payable {
-        // You can log a message or handle unexpected ETH transfers here
+   // Event to log unexpected ETH transfers
+     event FallbackTriggered(address sender, uint amount);
+
+    // Event to log ETH received through the receive function
+     event EtherReceived(address sender, uint amount);
+
+     fallback() external payable {
+        // Emit the FallbackTriggered event with the sender’s address and amount sent
+       emit FallbackTriggered(msg.sender, msg.value);
+}
+    // Receive ETH
+    receive() external payable {
+       // Emit the EtherReceived event with the sender’s address and amount of Ether sent
+       emit EtherReceived(msg.sender, msg.value);
     }
 
     function addStudent(uint _id, string memory _name, uint _age, string memory _course) public {
@@ -35,8 +46,5 @@ contract StudentData {
     function getStudentCount() public view returns (uint) {
         return students.length;
     }
-    
-    // Receive ETH
-    receive() external payable {}
 
 }

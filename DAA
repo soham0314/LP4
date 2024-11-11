@@ -179,5 +179,164 @@ int main() {
     cout << "The maximum value that can be obtained is: " << max_value << endl;
 
     return 0;
+
+
+ 4- >
+ 
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+// Function to solve the 0-1 Knapsack problem using Dynamic Programming
+int knapsack(int W, vector<int> &weights, vector<int> &values, int n) {
+    // Create a 2D DP table to store the maximum value at each weight limit
+    vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+
+    // Build the table dp[][] in bottom-up manner
+    for (int i = 1; i <= n; i++) {
+        for (int w = 1; w <= W; w++) {
+            if (weights[i - 1] <= w) {
+                // Maximize the value by either including or excluding the current item
+                dp[i][w] = max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);
+            } else {
+                dp[i][w] = dp[i - 1][w];
+            }
+        }
+    }
+
+    // The bottom-right corner of the table contains the maximum value that can be obtained
+    return dp[n][W];
 }
 
+int main() {
+    int n, W;
+    
+    // Input number of items and knapsack capacity
+    cout << "Enter the number of items: ";
+    cin >> n;
+    cout << "Enter the capacity of the knapsack: ";
+    cin >> W;
+
+    vector<int> weights(n), values(n);
+    
+    // Input the weights and values of the items
+    cout << "Enter the weights of the items:\n";
+    for (int i = 0; i < n; i++) {
+        cin >> weights[i];
+    }
+    
+    cout << "Enter the values of the items:\n";
+    for (int i = 0; i < n; i++) {
+        cin >> values[i];
+    }
+    
+    // Call the knapsack function and output the result
+    int max_value = knapsack(W, weights, values, n);
+    cout << "The maximum value that can be obtained is: " << max_value << endl;
+
+    return 0;
+}
+
+
+
+5 ->
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Function to check if a Queen can be placed on board[row][col]
+bool isSafe(vector<vector<int>> &board, int row, int col, int N) {
+    // Check this column on the upper side
+    for (int i = 0; i < row; i++) {
+        if (board[i][col] == 1)
+            return false;
+    }
+
+    // Check the upper left diagonal
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j] == 1)
+            return false;
+    }
+
+    // Check the upper right diagonal
+    for (int i = row, j = col; i >= 0 && j < N; i--, j++) {
+        if (board[i][j] == 1)
+            return false;
+    }
+
+    return true;
+}
+
+// Backtracking function to solve N-Queens problem
+bool solveNQueens(vector<vector<int>> &board, int row, int N) {
+    // Base case: If all queens are placed, return true
+    if (row >= N)
+        return true;
+
+    // If a queen has already been placed in this row, skip to the next row
+    for (int col = 0; col < N; col++) {
+        if (board[row][col] == 1) {
+            return solveNQueens(board, row + 1, N);
+        }
+    }
+
+    // Try placing a queen in each column for the current row
+    for (int col = 0; col < N; col++) {
+        if (isSafe(board, row, col, N)) {
+            // Place the queen
+            board[row][col] = 1;
+
+            // Recursively place the remaining queens
+            if (solveNQueens(board, row + 1, N))
+                return true;
+
+            // If placing the queen in board[row][col] leads to no solution, remove the queen
+            board[row][col] = 0;
+        }
+    }
+
+    // If the queen cannot be placed in any column, return false
+    return false;
+}
+
+// Function to print the N-Queens matrix
+void printBoard(vector<vector<int>> &board, int N) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int N, initRow, initCol;
+
+    // Input the size of the board (N x N) and the initial position of the first queen
+    cout << "Enter the value of N (size of board): ";
+    cin >> N;
+    
+    vector<vector<int>> board(N, vector<int>(N, 0));  // Initialize the N x N board with all 0s
+
+    cout << "Enter the row and column of the first Queen (0-indexed): ";
+    cin >> initRow >> initCol;
+
+    // Place the first Queen
+    board[initRow][initCol] = 1;
+
+    // Start solving from the next row after placing the first queen
+    if (solveNQueens(board, 0, N)) {
+        cout << "The solution to the N-Queens problem is:\n";
+        printBoard(board, N);
+    } else {
+        cout << "No solution exists for the given initial configuration.\n";
+    }
+
+    return 0;
+}
+
+}

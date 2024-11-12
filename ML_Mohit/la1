@@ -1,0 +1,1 @@
+df = treat_outliers_all(df , df.iloc[: , 0::])
